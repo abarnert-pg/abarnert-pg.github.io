@@ -15,7 +15,7 @@
         NSLog(@"got failed HTTP %d with error %@", agent.request.responseStatusCode, agent.request.error);
     }];
 </code></pre>
-<p>There are a handful of similar methods for post, for get/post body/post files with a slew of extra parameters for controlling things like retry behavior, and for building a structure of all those parameters in advance and then making a request with them, but the basic idea is the same.</p>
+<p>There are a handful of similar methods: one similarly short one for post, four with a slew of extra args for get/post body/post files/arbitrary request, and one for explicitly building a structure full of args and making a request with that. But the basic idea is the same for all of them.</p>
 <p>Notice that, even though this is a class method constructor, there’s almost never any reason to actually use the constructed object that’s returned. The same object is passed into the callbacks, which is where it’s actually used. And even there, the only thing you want to do with it is get the request object. (There is one exception to all of this, in <code>AssetManager</code>—but it relies on peeking under the covers and using ASIHTTP features.)</p>
 <h1 id="pgenginehttp"><code>PGEngine::HTTP</code></h1>
 <p>Here’s how you use the new C++ API to do the same thing:</p>
@@ -70,28 +70,28 @@ void PGEngine::HTTP::Get(
 void PGEngine::HTTP::GetFile(
     string url, 
     string filename,
-    map&lt;string, string&gt; parameters,
+    const map&lt;string, string&gt; &amp;parameters,
     function&lt;void(const Response &amp;)&gt; success, 
     function&lt;void(const Response &amp;)&gt; failure,
     etc.);
 
 void PGEngine::HTTP::Post(
     string url, 
-    map&lt;string, string&gt; parameters,
+    const map&lt;string, string&gt; &amp;parameters,
     function&lt;void(const Response &amp;)&gt; success, 
     function&lt;void(const Response &amp;)&gt; failure,
     etc.);
 
 void PGEngine::HTTP::Post(
     string url, 
-    vector&lt;char&gt; body,
+    const vector&lt;char&gt; &amp;body,
     function&lt;void(const Response &amp;)&gt; success, 
     function&lt;void(const Response &amp;)&gt; failure,
-    etc.)
+    etc.);
 
 void PGEngine::HTTP::PostFiles(
     string url, 
-    map&lt;string, string&gt; files,
+    const map&lt;string, string&gt; &amp;files,
     function&lt;void(const Response &amp;)&gt; success, 
     function&lt;void(const Response &amp;)&gt; failure,
     etc.);
@@ -99,19 +99,19 @@ void PGEngine::HTTP::PostFiles(
 void PGEngine::HTTP::Request(
     string method,
     string url, 
-    map&lt;string, string&gt; parameters,
+    const map&lt;string, string&gt; &amp;parameters,
     function&lt;void(const Response &amp;)&gt; success, 
     function&lt;void(const Response &amp;)&gt; failure,
     etc.);
 </code></pre>
 <h2 id="tonotdo">TO(NOT)DO</h2>
-<p>This leaves out two parameters that exist today, <code>serverPort</code> and <code>compressBody</code>, but I don’t think either is needed. Neither is used in PGEngine or ToW code. We always use the port from the URL (or from the service base URL, when using the utilities that build a URL from a service and an endpoint name), and we always use compress (which actually means compress if the server can handle it, fall back if it can’t—less efficient for servers that can’t handle it, but we don’t talk to any).</p>
-<p>This also leaves out some response attributes that are either redundant (e.g., <code>contentLength</code>) or never used (and not even correct in the case of cookies…), but that’s fine.</p>
+<p>This should cover all the uses of the param-structure API, not just the simpler API, that are actually used in PGEngine/Dragons/ToW. But it does leave out a few things.</p>
+<p>There are params today for <code>serverPort</code> and <code>compressBody</code>. Neither is used in PGEngine or ToW code. We always use the port from the URL (or from the service base URL, when using the utilities that build a URL from a service and an endpoint name), and we always use compress (which actually means compress if the server can handle it, fall back if it can’t—less efficient for servers that can’t handle it, but we don’t talk to any).</p>
+<p>There are a bunch of response attributes that are either redundant (e.g., <code>contentLength</code>) or never used (and not even correct in the case of cookies…), and also a bunch of them are available directly on the agent object as well as on its request property… but that’s all unneeded.</p>
 <p>Using jQuery-style callback/errback, but not putting it at the end (because all of the usually-defaulted arguments have to come after the mandatory ones because C++ sucks), looks weird to anyone who’s used to the jQuery style. But I don’t think it’s an actual problem here.</p>
-<p>The <code>cache</code> flag is a whole enum with a bunch of different options in PEASI (which you can’t pass through the designated API; you have to go to the param-struct API). But all of our existing code uses the default, except for one place where we use the no-cache value.</p>
 <h3 id="too-many-damn-params">Too many damn params</h3>
 <p>Requiring the user to pass a whole slew of extra params when they want to change just one of them is annoying. But that’s in inherent in C++ sucking (and ObjC too). All of the tricks to simulate named arguments are either annoying to use, fragile, or ridiculously complicated in implementation (look at the Boost version if you want to have nightmares about macros and templates fighting over a post-apocalyptic Earth where humans can only survive in deep caves). We could use one if people really hate this API, but otherwise it’s not worth it.</p>
-<p>There are other thing we could do to at least reduce the number:</p>
+<p>There are other things we could do to at least reduce the number:</p>
 <ul>
 <li>
 <p>In many cases, we pass the same function for <code>success</code> and <code>failure</code>. Often by writing the exact same block twice. We could have a special value for <code>failure</code> (and even make it the default) that means "same as <code>success</code>". But if the callback is long enough that repeating it bothers you, it’s probably long enough that naming it and passing it by name won’t bother you.</p>
