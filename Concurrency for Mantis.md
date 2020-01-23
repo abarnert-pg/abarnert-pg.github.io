@@ -276,7 +276,9 @@ Once you bite the bullet and just require client code to lock and signal the sam
 As of early 2020, the language supports none of this:
 
  - Futures do exist—but in a useless, stripped-down implementation.
-   - There is a somewhat more usable version in a TR for C++17, but it's still not complete—and it's not going into C++20.
+   - C++20 still has the useless version from C++11.
+   - TS1 (post-C++17 experimental) is better, but not really available, and a dead end.
+   - TS2 (post-C++20 experimental) isn't even at the published draft stage yet.
  - Coroutines will probably be in C++20, but there are only experimental implementations so far.
  - Fibers, greenlets, awaitables, and compiler `await` support do not exist at all. There have been proposals for all of them in the past 6 years, but so far, none have got as far as a TR, much less been considered for inclusion in a standard.
 
@@ -308,5 +310,5 @@ We also need an executor that wraps our new frame loop design (whatever that end
 
 A consistent callback API is important whether we use futures or stick with pure callbacks.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTU3ODcyNTY0XX0=
+eyJoaXN0b3J5IjpbMTUzNjE0NDE1Nyw5NTc4NzI1NjRdfQ==
 -->
