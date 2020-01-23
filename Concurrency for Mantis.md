@@ -279,12 +279,12 @@ As of early 2020, the language supports none of this:
    - C++20 still has the useless version from C++11.
    - TS1 (post-C++17 experimental) is better, but not really available, and a dead end.
    - TS2 (post-C++20 experimental) isn't even at the published draft stage yet.
- - Coroutines will probably be in C++20, but there are only experimental implementations so far.
- - Fibers, greenlets, awaitables, and compiler `await` support do not exist at all. There have been proposals for all of them in the past 6 years, but so far, none have got as far as a TR, much less been considered for inclusion in a standard.
+ - Coroutines will probably be in C++20, but there are only experimental implementations so far. And `await` seems to have been bumped to a new post-20 TS.
+ - Fibers and greenlets do not have live proposals at all, only withdrawn ones from 5+ years ago.
 
-However, all of these things (even `await`, but with clunkier non-sugared syntax) can be built as long as you only care about working on iOS/Android/Mac/Windows/Linux/*BSD rather than on every possible C++ implementation. And there are third-party libraries that do it.
+However, all of these things (even `await`, but with clunkier non-sugared syntax) can be built without language support, as long as you only care about working on iOS/Android/Mac/Windows/Linux/*BSD rather than on every possible C++ implementation. And there are third-party libraries that do it.
 
-In fact, Boost has all of that in one place, and it all works together (and with standard library features)—but that's a pretty big one place. And using Boost—at least the parts that need to be compiled and linked, especially when you're cross-compiling (as we are)—can be a pain. So we may not want to use it.
+In fact, Boost has all of that in one place, and it all works together (and with standard library features), and whatever ends up in the stdlib will probably be closely aligned with Boost (as it usually is). But that's a pretty big one place. And using Boost—at least the parts that need to be compiled and linked, especially when you're cross-compiling (as we are)—can be a pain. So we may not want to use it.
 
 There are other implementations out there if we don't want (or can't use) Boost.
 
@@ -310,5 +310,5 @@ We also need an executor that wraps our new frame loop design (whatever that end
 
 A consistent callback API is important whether we use futures or stick with pure callbacks.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTUzNjE0NDE1Nyw5NTc4NzI1NjRdfQ==
+eyJoaXN0b3J5IjpbLTgwNzc3NDQzMCw5NTc4NzI1NjRdfQ==
 -->
