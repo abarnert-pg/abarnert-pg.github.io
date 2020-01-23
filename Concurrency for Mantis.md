@@ -1,6 +1,6 @@
 # tl;dr
 
-I think we want to design future Mantis/PGEngine APIs around futures (probably Boost's, migrating to `std::future` whenever it finally catches up)—but many of them will actually be wrapping either a synchronous API or a callback-based async API, which will also be exposed.
+I think we want to design future Mantis/PGEngine APIs around futures (maybe Boost's, migrating to `std` whenever it finally catches up but that's probably 2023 at the earliest)—but many of them will actually be wrapping either a synchronous API or a callback-based async API, which will also be exposed.
 
 # Synchronous
 
@@ -310,5 +310,5 @@ We also need an executor that wraps our new frame loop design (whatever that end
 
 A consistent callback API is important whether we use futures or stick with pure callbacks.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTgwNzc3NDQzMCw5NTc4NzI1NjRdfQ==
+eyJoaXN0b3J5IjpbLTE0MjU2MjUwMDksOTU3ODcyNTY0XX0=
 -->
