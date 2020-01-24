@@ -135,8 +135,9 @@ While we're using internally-concurrent objects here, and they have future inter
 
 # Awaitables
 
-    List<LoadedAssets> PrepBattle() async {
-        userState = await server.GetUserState(user)
+    template <typename Context>
+    List<LoadedAssets> PrepBattle(Context& context) async {
+        userState = Await(server.GetUserState(user), context)
         enemyState = await server.GetUserState(enemy)
         assetKeys = FindAssetsFor(userState) + FindAssetsFor(enemyState)
         loadedAssets = []
@@ -158,5 +159,5 @@ We're requiring every object to use async coroutines. However, it's trivial to a
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM5NjU3MzA5N119
+eyJoaXN0b3J5IjpbLTcwNTQ5NDYwNywtMzk2NTczMDk3XX0=
 -->
